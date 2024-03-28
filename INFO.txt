@@ -1,0 +1,14 @@
+IMPORTANT INFORMATION:
+  Dataset Name: Student Performance
+  
+Dataset (KAGGLE) URL link: https://www.kaggle.com/datasets/devansodariya/student-performance-data
+    -  33 attributes
+Dataset (UCI ML) URL link: https://archive.ics.uci.edu/dataset/320/student+performance 
+    - 30 attributes
+    AUTHOR: Paulo Cortez
+
+    CLASSIFICATION PROBLEM: 3 models used to predict students performance
+                - Binary classification (PASS / FAIL)
+                - 5-level classification (5 possible grades)
+                - Regression (predicting numeric value)
+              
