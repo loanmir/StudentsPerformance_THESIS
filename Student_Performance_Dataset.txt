@@ -1,0 +1,25 @@
+
+AUTHORS: Paul Cortez and Alice Silva!!!!! 
+
+
+UCI ML DATASET: https://www.kaggle.com/datasets/devansodariya/student-performance-data
+    2 datasets -> mat(Mathematics) & por(Portuguese)
+    649 instances - rows
+    30 features - attributes
+    + 3 TARGET attributes (G1, G2, G3):
+                        G1: grade first period  
+                        G2: grade second period
+                        G3: final grade
+                        G3 strongly correlated with G1 and G2
+    No MISSING values
+    (K-MEANS clustering algorithm)
+    (Neural Networks) . https://www.semanticscholar.org/paper/Data-Mining-of-Students'-Performance-%3A-Turkish-as-a-Oyedotun-Tackie/1010f3d04b6d12e39ef8530e1359fb4ebe293d43
+
+
+KAGGLE DATASET: https://www.kaggle.com/datasets/devansodariya/student-performance-data/data
+    30 features - attributes
+    + 3 TARGET attributes (G1, G2, G3):
+                        G1: grade first period  
+                        G2: grade second period
+                        G3: final grade
+                        G3 strongly correlated with G1 and G2
