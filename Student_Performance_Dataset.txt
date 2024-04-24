@@ -23,3 +23,28 @@ KAGGLE DATASET: https://www.kaggle.com/datasets/devansodariya/student-performanc
                         G2: grade second period
                         G3: final grade
                         G3 strongly correlated with G1 and G2
+
+EDA -> Exploratory data analysis
+
+POSSIBLE ALGORITHMS!!
+
+REGRESSION --> Linear, Robust, Ridge, Lasso, Polynomial, RANDOM FOREST
+                -->https://www.kaggle.com/code/rayyan123z/regression-model-vs-nn#Documentation
+                --> https://www.kaggle.com/code/youssifhassan/student-performance-eda-modelling#Modling
+                --> https://www.kaggle.com/code/youssifhassan/student-performance-eda-modelling#Modling
+
+RANDOM FOREST --> https://www.kaggle.com/code/ranzeet013/predicting-student-success-rate-acc-0-92#Model-Selection-And-Training-:
+
+NEAREST NEIGHBOURS ALGORITHM --> https://www.kaggle.com/code/rayyan123z/regression-model-vs-nn#Documentation
+               
+
+K-MEAN CLUSTERING
+
+ČLANKIIIIIII!!!!:
+        - K-NEAREST NEIGHBOURS --> https://www.semanticscholar.org/paper/A-Machine-Learning-and-Explainable-AI-Approach-for-Hasib-Rahman/d8baeb876681111e245f523d4771218142884a38
+        - K-MEAN CLUSTERING --> https://www.semanticscholar.org/paper/The-Latent-of-Student-Learning-Analytic-with-K-mean-Mansur-Yusof/5dc76919cc24aa3a4bafcc8813f0bb5003af0c2c
+        - ANN --> https://www.semanticscholar.org/paper/Data-Mining-of-Students'-Performance-%3A-Turkish-as-a-Oyedotun-Tackie/1010f3d04b6d12e39ef8530e1359fb4ebe293d43
+        - NAIVE BAYES --> https://www.semanticscholar.org/paper/PREDICTING-STUDENTS'-PERFORMANCE-IN-DISTANCE-USING-Kotsiantis-Pierrakeas/ca327f56f4290809d7c243b57c97bb2eb0916ff1
+        - https://www.semanticscholar.org/paper/A-Machine-Learning-and-Explainable-AI-Approach-for-Hasib-Rahman/d8baeb876681111e245f523d4771218142884a38
+
+
