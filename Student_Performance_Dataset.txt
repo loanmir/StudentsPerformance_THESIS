@@ -37,6 +37,7 @@ RANDOM FOREST --> https://www.kaggle.com/code/ranzeet013/predicting-student-succ
 
 NEAREST NEIGHBOURS ALGORITHM --> https://www.kaggle.com/code/rayyan123z/regression-model-vs-nn#Documentation
                
+ARTIFICIAL NEURAL NETWORKS --> 
 
 K-MEAN CLUSTERING
 
