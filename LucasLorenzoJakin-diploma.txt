@@ -1,0 +1,38 @@
+89211034@student.upr.si
+
+PET, 5.4.2024:
+--------------
+Na sestanku:
+1. Lucas se je odločil za dataset: https://archive.ics.uci.edu/dataset/320/student+performance
+2. Lucas ugotovi, da so podatki enaki kot na Kaggle-u (https://www.kaggle.com/datasets/devansodariya/student-performance-data)
+3. Na Kaggle-u si ogleda kako so se ostali lotili analize teh podatkov
+4. Zmeniva se, da bo Lucas za diplomo naredil analizo teh podatkov tako, da bo sledil CRISP-DM metodologijo
+5. Lucas je naredil GIT repozitorij, kjer bo dostopna koda diplome
+
+To do:
+1. Oba razmisliva o delovnem naslovu diplome
+2. Lucas si še dodatno ogleda kako so se ostali lotili analize in do naslednjič predlaga 5 možnih algoritmov strojnega učenja, s katerimi bi se lotil naloge
+3. Med pregledovanjem metod, Lucas poišče 3 do 5 člankov, ki bi se jih dalo citirat kot literaturo
+4. Lucas mi share-a dostop do GIT repozitorija
+5. Branko ustvari LaTeX okolje za pisanje diplomske naloge v Overleaf-u in share-a z Lucasom dostop
+6. Naslednji sestanek v SRE, 24.4.2024 ob 16h prek Zoom-a (https://upr-si.zoom.us/j/2711197445?pwd=ZGk0ZDZQb1NkcG5yWnE4Z3Y4aS9Edz09)
+
+SRE, 15.5.2024:
+---------------
+1. Delovni naslov: Predicting Student Performance Using Machine Learning
+2. Predlagani ML algoritmi: Regression, Random Forest, k-NN, Clustering, ANN
+3. Osnovni ML algoritmi (baseline): majority class classifier, OneR, Naive Bayes
+4. Koraki:
+- razumevanje podatkov = narejeno (kaggle, članki),
+- obdelava podatkov: 
+	+ pregledat vsak atribut posebej, porazdelitve, korelacije ...
+	+ uporabit OneR ali korelacijski koeficient za preverit korelacijo z razredom
+	+ Odločitev: ali klasifikacija ali regresija in posledično (če klasifikacija) kako diskretizirat razred?
+	
+- modeliranje: probat pognat algoritme z različnimi parametri
+- evalvacija:
+	+ katero mero natančnosti uporabit (accuracy, MSE, F1, AUC)
+	+ kakšen protokol testiranja (10-fold CV, random split, ...)
+- programski jezik = Python
+- Lucas napiše kratek povzetek zaključne naloge (naslov + 1 odstavek besedila + literatura)
+- Naslednji sestanek v SRE, 5.6.2024 ob 10h v kabnetu na Kettejevi (alternativa = teden kasneje)
