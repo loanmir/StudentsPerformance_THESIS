@@ -49,3 +49,6 @@ K-MEAN CLUSTERING
         - https://www.semanticscholar.org/paper/A-Machine-Learning-and-Explainable-AI-Approach-for-Hasib-Rahman/d8baeb876681111e245f523d4771218142884a38
 
 
+-----------------------------------------------------------------------------------------------------
+THESIS INTRODUCTION:
+-    https://docs.google.com/document/d/13iXsYW9DOodkiXl1jfdYWWU9jN7b6_Hly7fs8_cgB8s/edit
