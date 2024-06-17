@@ -37,7 +37,7 @@ library(ggcorrplot)
 library(gt)
 library(ggplot2)
 dataset <- read.csv("student_data.csv", header = T)
-colnames(dataset)
+nrow(dataset)
 ```
 
 Now about the dataframe; The initial version contained scarce information (only the grades and number of absences were available), it was complemented with the latter, which allowed the collection of several demographic, social and school related attributes. The final dataframe consists of 33 columns (attributes), where G3 represents the target variable, the one that we want to predict.
@@ -94,7 +94,13 @@ table<- data.frame(Attribute = att, Description = description)
 dataset %>% select(school) %>%
   count(school) %>%
   ggplot(., aes(x="", n, fill = school)) +
-  geom_bar(width = 1, stat = "identity") + coord_polar("y", start = 0)
+  geom_bar(width = 1, size = 1, color = "white",stat = "identity") + coord_polar("y", start = 0) +
+  geom_text(aes(label = paste0(round((n/395)*100),"%")),
+            position = position_stack(vjust = 0.5)) +
+  theme_classic() +
+  labs(x = NULL, y = NULL) +
+  theme(axis.line = element_blank())
+
 ```
 
 > SEX
@@ -103,7 +109,12 @@ dataset %>% select(school) %>%
 dataset %>% select(sex) %>%
   count(sex) %>%
   ggplot(., aes(x="", n, fill = sex)) +
-  geom_bar(width = 1, stat = "identity") + coord_polar("y", start = 0)
+  geom_bar(width = 1, size = 1, color = "white",stat = "identity") + coord_polar("y", start = 0) +
+  geom_text(aes(label = paste0(round((n/395)*100),"%")),
+            position = position_stack(vjust = 0.5)) +
+  theme_classic() +
+  labs(x = NULL, y = NULL) +
+  theme(axis.line = element_blank())
 ```
 
 > ADDRESS
@@ -112,7 +123,12 @@ dataset %>% select(sex) %>%
 dataset %>% select(address) %>%
   count(address) %>%
   ggplot(., aes(x="", n, fill = address)) +
-  geom_bar(width = 1, stat = "identity") + coord_polar("y", start = 0)
+  geom_bar(width = 1, size = 1, color = "white",stat = "identity") + coord_polar("y", start = 0) +
+  geom_text(aes(label = paste0(round((n/395)*100),"%")),
+            position = position_stack(vjust = 0.5)) +
+  theme_classic() +
+  labs(x = NULL, y = NULL) +
+  theme(axis.line = element_blank())
 ```
 
 > FAMSIZE
@@ -121,7 +137,12 @@ dataset %>% select(address) %>%
 dataset %>% select(famsize) %>%
   count(famsize) %>%
   ggplot(., aes(x="", n, fill = famsize)) +
-  geom_bar(width = 1, stat = "identity") + coord_polar("y", start = 0)
+  geom_bar(width = 1, size = 1, color = "white",stat = "identity") + coord_polar("y", start = 0) +
+  geom_text(aes(label = paste0(round((n/395)*100),"%")),
+            position = position_stack(vjust = 0.5)) +
+  theme_classic() +
+  labs(x = NULL, y = NULL) +
+  theme(axis.line = element_blank())
 ```
 
 > PSTATUS
@@ -130,7 +151,12 @@ dataset %>% select(famsize) %>%
 dataset %>% select(Pstatus) %>%
   count(Pstatus) %>%
   ggplot(., aes(x="", n, fill = Pstatus)) +
-  geom_bar(width = 1, stat = "identity") + coord_polar("y", start = 0)
+  geom_bar(width = 1, size = 1, color = "white",stat = "identity") + coord_polar("y", start = 0) +
+  geom_text(aes(label = paste0(round((n/395)*100),"%")),
+            position = position_stack(vjust = 0.5)) +
+  theme_classic() +
+  labs(x = NULL, y = NULL) +
+  theme(axis.line = element_blank())
 ```
 
 > MJOB
@@ -139,7 +165,12 @@ dataset %>% select(Pstatus) %>%
 dataset %>% select(Mjob) %>%
   count(Mjob) %>%
   ggplot(., aes(x="", n, fill = Mjob)) +
-  geom_bar(width = 1, stat = "identity") + coord_polar("y", start = 0)
+  geom_bar(width = 1, size = 1, color = "white",stat = "identity") + coord_polar("y", start = 0) +
+  geom_text(aes(label = paste0(round((n/395)*100),"%")),
+            position = position_stack(vjust = 0.5)) +
+  theme_classic() +
+  labs(x = NULL, y = NULL) +
+  theme(axis.line = element_blank())
 ```
 
 > FJOB
@@ -148,7 +179,12 @@ dataset %>% select(Mjob) %>%
 dataset %>% select(Fjob) %>%
   count(Fjob) %>%
   ggplot(., aes(x="", n, fill = Fjob)) +
-  geom_bar(width = 1, stat = "identity") + coord_polar("y", start = 0)
+  geom_bar(width = 1, size = 1, color = "white",stat = "identity") + coord_polar("y", start = 0) +
+  geom_text(aes(label = paste0(round((n/395)*100),"%")),
+            position = position_stack(vjust = 0.5)) +
+  theme_classic() +
+  labs(x = NULL, y = NULL) +
+  theme(axis.line = element_blank())
 ```
 
 > REASON
@@ -157,7 +193,12 @@ dataset %>% select(Fjob) %>%
 dataset %>% select(reason) %>%
   count(reason) %>%
   ggplot(., aes(x="", n, fill = reason)) +
-  geom_bar(width = 1, stat = "identity") + coord_polar("y", start = 0)
+  geom_bar(width = 1, size = 1, color = "white",stat = "identity") + coord_polar("y", start = 0) +
+  geom_text(aes(label = paste0(round((n/395)*100),"%")),
+            position = position_stack(vjust = 0.5)) +
+  theme_classic() +
+  labs(x = NULL, y = NULL) +
+  theme(axis.line = element_blank())
 ```
 
 > GUARDIAN
@@ -166,7 +207,12 @@ dataset %>% select(reason) %>%
 dataset %>% select(guardian) %>%
   count(guardian) %>%
   ggplot(., aes(x="", n, fill = guardian)) +
-  geom_bar(width = 1, stat = "identity") + coord_polar("y", start = 0)
+  geom_bar(width = 1, size = 1, color = "white",stat = "identity") + coord_polar("y", start = 0) +
+  geom_text(aes(label = paste0(round((n/395)*100),"%")),
+            position = position_stack(vjust = 0.5)) +
+  theme_classic() +
+  labs(x = NULL, y = NULL) +
+  theme(axis.line = element_blank())
 ```
 
 > SCHOOLSUP
@@ -175,7 +221,12 @@ dataset %>% select(guardian) %>%
 dataset %>% select(schoolsup) %>%
   count(schoolsup) %>%
   ggplot(., aes(x="", n, fill = schoolsup)) +
-  geom_bar(width = 1, stat = "identity") + coord_polar("y", start = 0)
+  geom_bar(width = 1, size = 1, color = "white",stat = "identity") + coord_polar("y", start = 0) +
+  geom_text(aes(label = paste0(round((n/395)*100),"%")),
+            position = position_stack(vjust = 0.5)) +
+  theme_classic() +
+  labs(x = NULL, y = NULL) +
+  theme(axis.line = element_blank())
 ```
 
 > FAMSUP
@@ -184,7 +235,12 @@ dataset %>% select(schoolsup) %>%
 dataset %>% select(famsup) %>%
   count(famsup) %>%
   ggplot(., aes(x="", n, fill = famsup)) +
-  geom_bar(width = 1, stat = "identity") + coord_polar("y", start = 0)
+  geom_bar(width = 1, size = 1, color = "white",stat = "identity") + coord_polar("y", start = 0) +
+  geom_text(aes(label = paste0(round((n/395)*100),"%")),
+            position = position_stack(vjust = 0.5)) +
+  theme_classic() +
+  labs(x = NULL, y = NULL) +
+  theme(axis.line = element_blank())
 ```
 
 > PAID
@@ -193,7 +249,12 @@ dataset %>% select(famsup) %>%
 dataset %>% select(paid) %>%
   count(paid) %>%
   ggplot(., aes(x="", n, fill = paid)) +
-  geom_bar(width = 1, stat = "identity") + coord_polar("y", start = 0)
+  geom_bar(width = 1, size = 1, color = "white",stat = "identity") + coord_polar("y", start = 0) +
+  geom_text(aes(label = paste0(round((n/395)*100),"%")),
+            position = position_stack(vjust = 0.5)) +
+  theme_classic() +
+  labs(x = NULL, y = NULL) +
+  theme(axis.line = element_blank())
 ```
 
 > ACTIVITIES
@@ -202,7 +263,12 @@ dataset %>% select(paid) %>%
 dataset %>% select(activities) %>%
   count(activities) %>%
   ggplot(., aes(x="", n, fill = activities)) +
-  geom_bar(width = 1, stat = "identity") + coord_polar("y", start = 0)
+  geom_bar(width = 1, size = 1, color = "white",stat = "identity") + coord_polar("y", start = 0) +
+  geom_text(aes(label = paste0(round((n/395)*100),"%")),
+            position = position_stack(vjust = 0.5)) +
+  theme_classic() +
+  labs(x = NULL, y = NULL) +
+  theme(axis.line = element_blank())
 ```
 
 > NURSERY
@@ -211,7 +277,12 @@ dataset %>% select(activities) %>%
 dataset %>% select(nursery) %>%
   count(nursery) %>%
   ggplot(., aes(x="", n, fill = nursery)) +
-  geom_bar(width = 1, stat = "identity") + coord_polar("y", start = 0)
+  geom_bar(width = 1, size = 1, color = "white",stat = "identity") + coord_polar("y", start = 0) +
+  geom_text(aes(label = paste0(round((n/395)*100),"%")),
+            position = position_stack(vjust = 0.5)) +
+  theme_classic() +
+  labs(x = NULL, y = NULL) +
+  theme(axis.line = element_blank())
 ```
 
 > HIGHER
@@ -220,7 +291,12 @@ dataset %>% select(nursery) %>%
 dataset %>% select(higher) %>%
   count(higher) %>%
   ggplot(., aes(x="", n, fill = higher)) +
-  geom_bar(width = 1, stat = "identity") + coord_polar("y", start = 0)
+  geom_bar(width = 1, size = 1, color = "white",stat = "identity") + coord_polar("y", start = 0) +
+  geom_text(aes(label = paste0(round((n/395)*100),"%")),
+            position = position_stack(vjust = 0.5)) +
+  theme_classic() +
+  labs(x = NULL, y = NULL) +
+  theme(axis.line = element_blank())
 ```
 
 > INTERNET
@@ -229,7 +305,12 @@ dataset %>% select(higher) %>%
 dataset %>% select(internet) %>%
   count(internet) %>%
   ggplot(., aes(x="", n, fill = internet)) +
-  geom_bar(width = 1, stat = "identity") + coord_polar("y", start = 0)
+  geom_bar(width = 1, size = 1, color = "white",stat = "identity") + coord_polar("y", start = 0) +
+  geom_text(aes(label = paste0(round((n/395)*100),"%")),
+            position = position_stack(vjust = 0.5)) +
+  theme_classic() +
+  labs(x = NULL, y = NULL) +
+  theme(axis.line = element_blank())
 ```
 
 > ROMANTIC
@@ -238,12 +319,17 @@ dataset %>% select(internet) %>%
 dataset %>% select(romantic) %>%
   count(romantic) %>%
   ggplot(., aes(x="", n, fill = romantic)) +
-  geom_bar(width = 1, stat = "identity") + coord_polar("y", start = 0)
+  geom_bar(width = 1, size = 1, color = "white",stat = "identity") + coord_polar("y", start = 0) +
+  geom_text(aes(label = paste0(round((n/395)*100),"%")),
+            position = position_stack(vjust = 0.5)) +
+  theme_classic() +
+  labs(x = NULL, y = NULL) +
+  theme(axis.line = element_blank())
 ```
 
 ***
 
-## String Data Distributions
+## Numeric Data Distributions
 
 > DALC
 
@@ -356,6 +442,7 @@ corrplot(cor(dataset), col = wat, cl.length = 21,
   addCoef.col = "black", method = "shade")
 par(opar)
 ```
+
 ------------------------------------------------------------------------
 
 # Exploratary Data Analysis (EDA)
