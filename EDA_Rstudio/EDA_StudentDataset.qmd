@@ -432,15 +432,15 @@ dataset %>% select(romantic) %>%
 ## HEATMAP of all attributes
 
 ```{r}
-#library(pheatmap)
-library(corrplot)
-library(pals)
-opar = par(mfcol = 1:2)
-wat <- adjustcolor(watlington(16)[11:3], alpha = 0.7)
-corrplot.mixed(cor(dataset), lower = "number", upper = "shade", upper.col = wat)
-corrplot(cor(dataset), col = wat, cl.length = 21, 
-  addCoef.col = "black", method = "shade")
-par(opar)
+dataset %>% select(where(is.numeric)) %>% model.matrix(~0+.,
+              data=.) %>%
+    cor(use="pairwise.complete.obs") %>% 
+    ggcorrplot(show.diag = FALSE, type="full",
+               lab=TRUE,legend.title = "Correlation" ,lab_size
+               = 2,lab_col = "black" ,ggtheme =
+                 ggplot2::theme_gray,
+               colors = c("white","red","purple"),
+               outline.color = "black")
 ```
 
 ------------------------------------------------------------------------
