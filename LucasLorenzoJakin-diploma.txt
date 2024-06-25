@@ -1,4 +1,5 @@
 89211034@student.upr.si
+Branko: 031 852 712
 
 PET, 5.4.2024:
 --------------
@@ -48,3 +49,12 @@ SRE, 12.6.2024:
 - doda histograme za vsak posamezen atribut
 - doda box-plot-e za vsak numeričen atribut in pogleda, če so kje kaki outlier-ji
 5. Naslednji sestanek v TOR, 18.6.2024 ob 10h v kabinetu na Kettejevi
+
+TOR, 18.6.2024:
+---------------
+1. Glede na EDA fazo, se Lucas odloči katere primere bi morda lahko izločili iz nadaljnjih analiz
+2. Pri atributu "Failures" se namesto box-plota raje izriše pie chart,
+3. Imamo 2 možnosti:
+	- G3 (ali G2 ali G1) tretirati kot zvezni razred in uporabiti ML algoritme regresije (linearna regresija, SVM, modelska drevesa ...)
+	- G3 (ali G2 ali G1) tretirati kot diskretni razred (A, B, C, D in F - glej članek) in uporabiti ML algoritme klasifikacije (Naivni Bayes, odločitvena drevesa, SVM, random forrest ...)
+4. Naslednji sestanek v SRE, 26.6.2024 ob 10h v kabinetu na Kettejevi
