@@ -49,7 +49,7 @@ The dataset looks like the following:
   
 ```
 
------------------------------------------------------------------------
+------------------------------------------------------------------------
 
 \
 
@@ -66,7 +66,6 @@ The dataset looks like the following:
 -   In this analysis I used the **skim()** function that provides a neat summary of the dataset, revealing key statistics and characteristics of the data. The dataframe is "partitioned" into two distinct data types: **Numerical** and **String**.
 -   Numerical attributes were examined for statistical measures(mean,median,standard deviation) and gave a description on how are the attributes distributed.
 -   The dataframe does not contain any missing values, which is crucial for the modeling(algorithm) part and making predictions.
-
 
 ```{r}
 library(knitr)
@@ -327,7 +326,7 @@ dataset %>% select(romantic) %>%
   theme(axis.line = element_blank())
 ```
 
-***
+------------------------------------------------------------------------
 
 ## Numeric Data Distributions
 
@@ -391,6 +390,20 @@ dataset %>% select(romantic) %>%
   boxplot(dataset$failures, col = "blue", border = "black")
 ```
 
+-   Pie chart
+
+```{r}
+dataset %>% select(failures) %>%
+  count(failures) %>%
+  ggplot(., aes(x="", n, fill = failures)) +
+  geom_bar(width = 1, size = 1, color = "white",stat = "identity") + coord_polar("y", start = 0) +
+  geom_text(aes(label = paste0(round((n/395)*100),"%")),
+            position = position_stack(vjust = 0.5)) +
+  theme_classic() +
+  labs(x = NULL, y = NULL) +
+  theme(axis.line = element_blank())
+```
+
 > FAMREL
 
 ```{r}
@@ -427,7 +440,7 @@ dataset %>% select(romantic) %>%
   boxplot(dataset$traveltime, col = "blue", border = "black")
 ```
 
-***
+------------------------------------------------------------------------
 
 ## HEATMAP of all attributes
 
@@ -503,6 +516,58 @@ dataset %>% select(G1,G3) %>%
 -   From the above three plots, we can see that these three attributes are correlated to each other. G1 and G2 represent the grade received from the first period and second school period, respectively. G3 is the target attribute and as we can see from the plots shown above it has a strong correlation with attributes G1 & G2. This occurs because G3 is the final year grade and this actually depends on the grades received from the first and second period.
 
 ------------------------------------------------------------------------
+
+## Target attribute G3
+
+-   After performing some analysis, I have decided to leave out the variables G1 and G2 and to continue with just having the target feature G3. I made this choice, because G1, G2 and G3 are very correlated to each other and G3 values are very similar to those from G1 and G2.
+
+> 5 - Level Classification
+
+This may be one possibility when trying to predict the final grade from students. G3 can be discretized into a separate columns that contains 5 different values/ classes, that represent the grading system used in Ireland. The values of attribute G3 go from 0 to 20, these can be discretized in the following way:
+
+-    16-20 --\> class **A**
+
+-   14-15 --\> class **B**
+
+-   12-13 --\> class **C**
+
+-   10-11 --\> class **D**
+
+-   0-9 --\> class **F**
+
+```{r}
+datasetCategory <- dataset %>% mutate(Category = case_when(
+  G3 >= 16 & G3 <= 20  ~ 'A',
+  G3 >= 14 & G3 <= 15  ~ 'B',
+  G3 >= 12 & G3 <= 13  ~ 'C',
+  G3 >= 10 & G3 <= 11  ~ 'D',
+  G3 >= 0 & G3 <= 9  ~ 'F',
+  TRUE ~ NA_character_
+))
+```
+```{r}
+datasetCategory %>% select(Category) %>%
+  count(Category) %>%
+  ggplot(., aes(Category, n, fill = Category)) +
+  geom_col(width = 0.5)+
+  labs(x = "Grades", y = "Count")+
+  theme_minimal()
+
+
+```
+
+
+> Regression
+
+```{r}
+dataset %>% select(G3) %>%
+  count(G3) %>%
+  ggplot(., aes(G3, n)) +
+  geom_col(width = 0.5)+
+  labs(x = "G3", y = "Count")+
+  scale_x_continuous(breaks = seq(0,2, by = 5)) +
+  theme_minimal()
+```
 
 Now we'll see how are the relationships between the target attrbite G3 with other attributes.
 
