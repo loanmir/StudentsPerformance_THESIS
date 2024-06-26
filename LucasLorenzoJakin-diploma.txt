@@ -58,3 +58,9 @@ TOR, 18.6.2024:
 	- G3 (ali G2 ali G1) tretirati kot zvezni razred in uporabiti ML algoritme regresije (linearna regresija, SVM, modelska drevesa ...)
 	- G3 (ali G2 ali G1) tretirati kot diskretni razred (A, B, C, D in F - glej članek) in uporabiti ML algoritme klasifikacije (Naivni Bayes, odločitvena drevesa, SVM, random forrest ...)
 4. Naslednji sestanek v SRE, 26.6.2024 ob 10h v kabinetu na Kettejevi
+
+SRE, 26.6.2024:
+---------------
+- Lucas ima 3.7.2024 še zadnji izpit PSA
+- po tem datumu se loti intenzivno pisati diplomo
+- naslednji sestanek - malo daljši - v tednu med 15. in 19.7.2024
