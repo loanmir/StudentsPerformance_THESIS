@@ -525,7 +525,7 @@ dataset %>% select(G1,G3) %>%
 
 This may be one possibility when trying to predict the final grade from students. G3 can be discretized into a separate columns that contains 5 different values/ classes, that represent the grading system used in Ireland. The values of attribute G3 go from 0 to 20, these can be discretized in the following way:
 
--    16-20 --\> class **A**
+-   16-20 --\> class **A**
 
 -   14-15 --\> class **B**
 
@@ -545,6 +545,7 @@ datasetCategory <- dataset %>% mutate(Category = case_when(
   TRUE ~ NA_character_
 ))
 ```
+
 ```{r}
 datasetCategory %>% select(Category) %>%
   count(Category) %>%
@@ -555,7 +556,6 @@ datasetCategory %>% select(Category) %>%
 
 
 ```
-
 
 > Regression
 
