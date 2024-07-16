@@ -554,6 +554,7 @@ datasetCategory %>% select(Category) %>%
   labs(x = "Grades", y = "Count")+
   theme_minimal()
 
+write.csv(datasetCategory,"discretizedDF.csv", row.names = FALSE)
 
 ```
 
@@ -707,6 +708,40 @@ dataset_long <- dataset %>%
 ```
 
 -   The number of absences a student has, does not necessarily result in a lower grade overall, as absent student typically make up material they missed, effectively accounting for their absence.
+
+------------------------------------------------------------------------
+
+# MODELS
+
+-   **OneR model - One Rule**
+
+    -   OneRClassifier (python) expects **categorical** or **discretized** features.
+
+    -   Ensuring that features are categorical is **responsibility of user**
+
+-   **MULTICLASS CLASSIFICATION -** Grading on a scale from A-F
+
+    -   Decision Trees
+
+    -   Naive Bayes
+
+-   **REGRESSION -** Predicting exact numerical value based on inputs
+
+    -   Linear Regression
+
+    -   Lasso Regression
+
+    -   Support Vector Machines
+
+    -   KNN Model
+
+    -   Decision Tree Regression
+
+    -   Random Forest Regression
+
+-   **CROSS VALIDATION - STRATIFIED**
+
+    -   10 Fold Cross Valdiation
 
 ------------------------------------------------------------------------
 
