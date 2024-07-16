@@ -705,13 +705,23 @@ dataset_long <- dataset %>%
                  ggplot2::theme_gray,
                colors = c("black","red","white"),
                outline.color = "black")
+  
 ```
 
 -   The number of absences a student has, does not necessarily result in a lower grade overall, as absent student typically make up material they missed, effectively accounting for their absence.
 
+
+
+# Preprocessing 
+
+
+
+
+
+
 ------------------------------------------------------------------------
 
-# MODELS
+# METHODOLOGIES
 
 -   **OneR model - One Rule**
 
@@ -742,12 +752,134 @@ dataset_long <- dataset %>%
 -   **CROSS VALIDATION - STRATIFIED**
 
     -   10 Fold Cross Valdiation
+    
+# MODELING    
+    
+Let's set up Python in Rstudio:
+
+```{r}
+# SETTING UP PYTHON ON RSTUDIO
+library(reticulate)
+
+#virtualenv_create("my-python", python_version = "3.12")
+
+use_virtualenv("my-python", required = TRUE)
+
+#virtualenv_install(envname = "my-python", "matplotlib",ignore_installed = FALSE, pip_options = character())
+
+#virtualenv_install(envname = "my-python", "catboost",ignore_installed = FALSE, pip_options = character())
+
+#virtualenv_install(envname = "my-python", "numpy",ignore_installed = FALSE, pip_options = character())
+
+#virtualenv_install(envname = "my-python", "pandas",ignore_installed = FALSE, pip_options = character())
+
+#virtualenv_install(envname = "my-python", "seaborn",ignore_installed = FALSE, pip_options = character())
+
+#virtualenv_install(envname = "my-python", "scikit-learn",ignore_installed = FALSE, pip_options = character())
+
+#virtualenv_install(envname = "my-python", "tensorflow",ignore_installed = FALSE, pip_options = character())
+```
+
+## MULTICLASS CLASSIFICATIONS
+
+## REGRESSION
+
+> Preprocessing
+
+```{r}
+datasetTarget <- dataset %>% mutate(TotalGrade = G1 + G2 + G3,
+                                      AvgGrade = (G1 + G2 + G3)/ 3)
+head(datasetTarget)
+write.csv(datasetTarget, "dfAvgGrade.csv", row.names = FALSE)
+```
+
+
+```{python}
+import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+from sklearn.preprocessing import OneHotEncoder, StandardScaler
+from sklearn.compose import ColumnTransformer
+from sklearn.preprocessing import LabelEncoder
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score 
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import confusion_matrix,classification_report
+
+student_df = pd.read_csv('dfAvgGrade.csv')
+
+# Categorical attributes
+cat_features = [feature for feature in student_df.columns if student_df[feature].dtype == 'O']
+
+# Numerical attributes
+num_features = [feature for feature in student_df.columns if student_df[feature].dtype != 'O']
+
+#print(f'We have {len(num_features)} numerical features: {num_features}\n')
+#print(f'We have {len(cat_features)} categorical features: {cat_features}')
+
+fig, axs = plt.subplots(1, 2, figsize=(15, 7))
+plt.subplot(121)
+sns.histplot(data=student_df, x='AvgGrade', bins=30, kde=True, color='g')
+plt.subplot(122)
+sns.histplot(data=student_df, x='AvgGrade', kde=True, hue='sex')
+plt.show()
+
+```
+
+```{python}
+X = student_df.drop(['TotalGrade', 'AvgGrade'], axis=1)
+y = student_df[['AvgGrade', 'TotalGrade']]
+
+# Transforming the columns 
+preprocessor = ColumnTransformer(
+    transformers=[
+        ('cat', OneHotEncoder(), cat_features)],
+    remainder='passthrough'  # Leave the rest of the columns as they are
+)
+
+X = preprocessor.fit_transform(X)
+```
+
+```{python}
+# Function for evaluation
+def evaluate_model(true, predicted):
+    mae = mean_absolute_error(true, predicted)
+    mse = mean_squared_error(true, predicted)
+    rmse = np.sqrt(mean_squared_error(true, predicted))
+    r2_square = r2_score(true, predicted)
+    return mae, rmse, r2_square
+```
+
+```{python}
+X_train, X_test, y_train, y_test = train_test_split(X,y,test_size=0.2,random_state=42)
+
+model = LinearRegression()
+model.fit(X_train, y_train)
+
+y_train_pred = model.predict(X_train)
+y_test_pred = model.predict(X_test)
+y_test
+
+```
+
+```{python}
+pd.DataFrame({
+    'Actual_TotalGrade': y_test['TotalGrade'].values,
+    'Predicted_TotalGrade': y_test_pred[:, 1],
+    'Actual_AvgGrade': y_test['AvgGrade'].values,
+    'Predicted_AvgGrade': y_test_pred[:, 0]
+})
+
+```
 
 ------------------------------------------------------------------------
 
 # Conclusion
 
-Education is a crucial element in our society. The chosen dataset was used to address the prediction of secondary student grades of two core classes (Mathematics and Portuguese) by using past school grades, demographic, social and other school related data. Conducting **Exploratory Data Analysis** is an essential step before implementing machine learning models to predict the target attribute in the dataset. EDA (just some attributes for this project) allowed me to understand the structure, quality and underlying patterns of the data, revealing important information about relationships between the attributes.
+Education is a crucial element in our society. The chosen dataset was used to address the prediction of secondary student grades of two core classes (Mathematics and Portuguese) by using past school grades, demographic, social and other school related data. Conducting **Exploratory Data Analysis** is an model_train_mae , model_train_rmse, model_train_r2 = evaluate_model(y_train, y_train_pred)
+
+model_test_mae , model_test_rmse, model_test_r2 = evaluate_model(y_test, y_test_pred)essential step before implementing machine learning models to predict the target attribute in the dataset. EDA (just some attributes for this project) allowed me to understand the structure, quality and underlying patterns of the data, revealing important information about relationships between the attributes.
 
 The project was made with help of the following article: @datasetArticle
 
