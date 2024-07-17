@@ -64,3 +64,10 @@ SRE, 26.6.2024:
 - Lucas ima 3.7.2024 še zadnji izpit PSA
 - po tem datumu se loti intenzivno pisati diplomo
 - naslednji sestanek - malo daljši - v tednu med 15. in 19.7.2024
+
+SRE, 17.7.2024:
+---------------
+- Lucas ima narejene vse predmete
+- Diplomska naloga dobro napreduje
+- Branko se pozanima kako v diplomo vključiti link do GIT repozitorija
+- naslednji sestanek - malo daljši - v PON, 5.8.2024 ob 10h
