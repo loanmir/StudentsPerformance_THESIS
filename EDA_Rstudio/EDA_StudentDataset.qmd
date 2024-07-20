@@ -456,6 +456,9 @@ dataset %>% select(where(is.numeric)) %>% model.matrix(~0+.,
                outline.color = "black")
 ```
 
+
+
+
 ------------------------------------------------------------------------
 
 # Exploratary Data Analysis (EDA)
@@ -780,6 +783,35 @@ use_virtualenv("my-python", required = TRUE)
 #virtualenv_install(envname = "my-python", "tensorflow",ignore_installed = FALSE, pip_options = character())
 ```
 
+## HeatMap of attributes
+```{python}
+import pandas as pd
+import numpy as np  
+from sklearn.preprocessing import LabelEncoder
+import seaborn as sns
+import matplotlib.pyplot as plt
+from sklearn.linear_model import Ridge, Lasso
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import mean_squared_error,mean_absolute_error
+from sklearn.model_selection import train_test_split
+from sklearn.model_selection import RandomizedSearchCV
+from sklearn.model_selection import GridSearchCV
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense, Dropout
+from tensorflow.keras.optimizers import Adam
+from sklearn.metrics import make_scorer
+from tensorflow.keras.models import clone_model
+from sklearn.model_selection import StratifiedKFold
+from sklearn.model_selection import KFold
+
+df = pd.read_csv('student_data.csv')
+
+df.head()
+
+```
+
+
+
 ## MULTICLASS CLASSIFICATIONS
 
 ## REGRESSION
@@ -795,17 +827,6 @@ write.csv(datasetTarget, "dfAvgGrade.csv", row.names = FALSE)
 
 
 ```{python}
-import pandas as pd
-import numpy as np
-import seaborn as sns
-import matplotlib.pyplot as plt
-from sklearn.preprocessing import OneHotEncoder, StandardScaler
-from sklearn.compose import ColumnTransformer
-from sklearn.preprocessing import LabelEncoder
-from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score 
-from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LinearRegression
-from sklearn.metrics import confusion_matrix,classification_report
 
 student_df = pd.read_csv('dfAvgGrade.csv')
 
