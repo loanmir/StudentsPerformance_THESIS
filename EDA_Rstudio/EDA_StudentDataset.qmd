@@ -445,19 +445,17 @@ dataset %>% select(failures) %>%
 ## HEATMAP of all attributes
 
 ```{r}
-dataset %>% select(where(is.numeric)) %>% model.matrix(~0+.,
+datasetCorr <- read.csv("CorrelationStudent.csv", header = T)
+datasetCorr %>% model.matrix(~0+.,
               data=.) %>%
     cor(use="pairwise.complete.obs") %>% 
     ggcorrplot(show.diag = FALSE, type="full",
                lab=TRUE,legend.title = "Correlation" ,lab_size
-               = 2,lab_col = "black" ,ggtheme =
+               = 1.2,lab_col = "black" ,ggtheme =
                  ggplot2::theme_gray,
-               colors = c("white","red","purple"),
+               colors = c("blue","white","red"),
                outline.color = "black")
 ```
-
-
-
 
 ------------------------------------------------------------------------
 
@@ -547,18 +545,25 @@ datasetCategory <- dataset %>% mutate(Category = case_when(
   G3 >= 0 & G3 <= 9  ~ 'F',
   TRUE ~ NA_character_
 ))
+
+datasetDiscretized <- datasetCategory %>% select(-G1, -G2, -G3)
 ```
 
 ```{r}
-datasetCategory %>% select(Category) %>%
+datasetDiscretized %>% select(Category) %>%
   count(Category) %>%
   ggplot(., aes(Category, n, fill = Category)) +
   geom_col(width = 0.5)+
   labs(x = "Grades", y = "Count")+
   theme_minimal()
 
-write.csv(datasetCategory,"discretizedDF.csv", row.names = FALSE)
+write.csv(datasetDiscretized,"discretizedDF.csv", row.names = FALSE)
+colnames(datasetDiscretized)
+```
 
+```{r}
+datasetDiscretized %>% select(Category) %>%
+  count(Category)
 ```
 
 > Regression
@@ -573,7 +578,7 @@ dataset %>% select(G3) %>%
   theme_minimal()
 ```
 
-Now we'll see how are the relationships between the target attrbite G3 with other attributes.
+Now we'll see how are the relationships between the target attribute G3 with other attributes.
 
 ## Age vs. Grade
 
@@ -713,14 +718,7 @@ dataset_long <- dataset %>%
 
 -   The number of absences a student has, does not necessarily result in a lower grade overall, as absent student typically make up material they missed, effectively accounting for their absence.
 
-
-
-# Preprocessing 
-
-
-
-
-
+# Preprocessing
 
 ------------------------------------------------------------------------
 
@@ -755,102 +753,174 @@ dataset_long <- dataset %>%
 -   **CROSS VALIDATION - STRATIFIED**
 
     -   10 Fold Cross Valdiation
-    
-# MODELING    
-    
+
+# MODELING
+
 Let's set up Python in Rstudio:
 
 ```{r}
 # SETTING UP PYTHON ON RSTUDIO
 library(reticulate)
 
-#virtualenv_create("my-python", python_version = "3.12")
+#virtualenv_create("my-python2", python_version = "3.12")
 
-use_virtualenv("my-python", required = TRUE)
+use_virtualenv("my-python2", required = TRUE)
 
-#virtualenv_install(envname = "my-python", "matplotlib",ignore_installed = FALSE, pip_options = character())
+#virtualenv_install(envname = "my-python2", "matplotlib",ignore_installed = FALSE, pip_options = character())
 
-#virtualenv_install(envname = "my-python", "catboost",ignore_installed = FALSE, pip_options = character())
+#virtualenv_install(envname = "my-python2", "catboost",ignore_installed = FALSE, pip_options = character())
 
-#virtualenv_install(envname = "my-python", "numpy",ignore_installed = FALSE, pip_options = character())
+#virtualenv_install(envname = "my-python2", "numpy",ignore_installed = FALSE, pip_options = character())
 
-#virtualenv_install(envname = "my-python", "pandas",ignore_installed = FALSE, pip_options = character())
+#virtualenv_install(envname = "my-python2", "pandas",ignore_installed = FALSE, pip_options = character())
 
-#virtualenv_install(envname = "my-python", "seaborn",ignore_installed = FALSE, pip_options = character())
+#virtualenv_install(envname = "my-python2", "seaborn",ignore_installed = FALSE, pip_options = character())
 
-#virtualenv_install(envname = "my-python", "scikit-learn",ignore_installed = FALSE, pip_options = character())
+#virtualenv_install(envname = "my-python2", "scikit-learn",ignore_installed = FALSE, pip_options = character())
 
-#virtualenv_install(envname = "my-python", "tensorflow",ignore_installed = FALSE, pip_options = character())
+#virtualenv_install(envname = "my-python2", "tensorflow",ignore_installed = FALSE, pip_options = character())
 ```
 
-## HeatMap of attributes
+## HeatMap of attributes (above made in R) - just encoding dataset
+
 ```{python}
+#| output: false
 import pandas as pd
 import numpy as np  
-from sklearn.preprocessing import LabelEncoder
 import seaborn as sns
 import matplotlib.pyplot as plt
 from sklearn.linear_model import Ridge, Lasso
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.metrics import mean_squared_error,mean_absolute_error
+import sklearn.ensemble as es
+
+from sklearn.metrics import  mean_squared_error,mean_absolute_error
+
 from sklearn.model_selection import train_test_split
-from sklearn.model_selection import RandomizedSearchCV
-from sklearn.model_selection import GridSearchCV
+
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Dropout
-from tensorflow.keras.optimizers import Adam
+
+
 from sklearn.metrics import make_scorer
+from sklearn.preprocessing import LabelEncoder
 from tensorflow.keras.models import clone_model
 from sklearn.model_selection import StratifiedKFold
 from sklearn.model_selection import KFold
+from sklearn.compose import ColumnTransformer
+from sklearn.preprocessing import StandardScaler, OneHotEncoder
+from scipy import stats
 
 df = pd.read_csv('student_data.csv')
 
-df.head()
+df['AvgGrade'] = (df['G1'] + df['G2'] + df['G3'])/3
 
+
+le = LabelEncoder()
+for column in df.columns:
+    if df[column].dtype == 'object':
+        df[column] = le.fit_transform(df[column])
+        
+df.info()
+
+df.to_csv("CorrelationStudent.csv", index=False)
 ```
 
+## OUTLIERS
 
 
 ## MULTICLASS CLASSIFICATIONS
 
-## REGRESSION
-
-> Preprocessing
+### ZeroR
 
 ```{r}
-datasetTarget <- dataset %>% mutate(TotalGrade = G1 + G2 + G3,
-                                      AvgGrade = (G1 + G2 + G3)/ 3)
-head(datasetTarget)
-write.csv(datasetTarget, "dfAvgGrade.csv", row.names = FALSE)
+library(OneR)
+# begin functions
+ZeroR <- function(x, ...) {
+  output <- OneR(cbind(dummy = TRUE, x[ncol(x)]), ...)
+  class(output) <- c("ZeroR", "OneR")
+  output
+}
+
+predict.ZeroR <- function(object, newdata, ...) {
+  class(object) <- "OneR"
+  predict(object, cbind(dummy = TRUE, newdata[ ncol(newdata)]), ...)
+}
+
+eval_model <- function(prediction, actual){
+  confusion_matrix <- table(Predicted = prediction, Actual = actual$categoryClass)
+  accuracy <- sum(diag(confusion_matrix)) / sum(confusion_matrix)
+  list(confusion_matrix = confusion_matrix, accuracy = accuracy)
+}
+# end functions
+datasetDisc <- read.csv("discretizedDF.csv", header = TRUE)
+head(datasetDisc)
+datasetDisc$categoryClass <- factor(datasetDisc[, 31])
+datasetDisc <- datasetDisc[, -31]
+colnames(datasetDisc)
+table(datasetDisc$categoryClass)
+
+set.seed(12)
+random <- sample(1:nrow(datasetDisc), 0.8 * nrow(datasetDisc))
+
+#Split into TRAINING & TEST
+#data_train <- datasetDisc[random, ]
+data_train <- optbin(datasetDisc[random, ], method = "infogain")
+data_test <- datasetDisc[-random, ]
+
+model <- ZeroR(data_train)
+summary(model)
+
+prediction <- predict(model, data_test)
+
+results <- eval_model(prediction, data_test)
+print(results$confusion_matrix)
+print(paste("Accuracy:", results$accuracy))
+#modelOne <- OneR(categoryClass ~ ., data = data_train)
 ```
 
+### OneR checkk!!
+
+```{r}
+
+library(OneR)
+
+modelOne <- OneR(data_train, verbose = TRUE)
+
+summary(modelOne)
+
+prediction <- predict(modelOne, data_test)
+
+results <- eval_model(prediction, data_test)
+
+print(results$confusion_matrix)
+print(paste("Accuracy:", results$accuracy))
+```
+
+### Random Forests
+
+```{r}
+#set.seed(78)
+library(randomForest)
+
+forestModel <- randomForest(categoryClass ~ ., data = data_train, ntree = 2000)
+predictionForest <- predict(forestModel, data_test)
+resultForest <- eval_model(predictionForest, data_test)
+print(resultForest$confusion_matrix)
+print(paste("Accuracy:", resultForest$accuracy))
+```
+
+### RandForest in Python
 
 ```{python}
+data = pd.read_csv('discretizedDF.csv')
 
-student_df = pd.read_csv('dfAvgGrade.csv')
 
-# Categorical attributes
-cat_features = [feature for feature in student_df.columns if student_df[feature].dtype == 'O']
+cat_features = [feature for feature in data.columns if data[feature].dtype == 'O']
 
 # Numerical attributes
-num_features = [feature for feature in student_df.columns if student_df[feature].dtype != 'O']
+num_features = [feature for feature in data.columns if data[feature].dtype != 'O']
 
-#print(f'We have {len(num_features)} numerical features: {num_features}\n')
-#print(f'We have {len(cat_features)} categorical features: {cat_features}')
-
-fig, axs = plt.subplots(1, 2, figsize=(15, 7))
-plt.subplot(121)
-sns.histplot(data=student_df, x='AvgGrade', bins=30, kde=True, color='g')
-plt.subplot(122)
-sns.histplot(data=student_df, x='AvgGrade', kde=True, hue='sex')
-plt.show()
-
-```
-
-```{python}
-X = student_df.drop(['TotalGrade', 'AvgGrade'], axis=1)
-y = student_df[['AvgGrade', 'TotalGrade']]
+X = data.drop("Category", axis=1)
+y = data["Category"]
 
 # Transforming the columns 
 preprocessor = ColumnTransformer(
@@ -860,39 +930,151 @@ preprocessor = ColumnTransformer(
 )
 
 X = preprocessor.fit_transform(X)
-```
 
-```{python}
-# Function for evaluation
-def evaluate_model(true, predicted):
-    mae = mean_absolute_error(true, predicted)
-    mse = mean_squared_error(true, predicted)
-    rmse = np.sqrt(mean_squared_error(true, predicted))
-    r2_square = r2_score(true, predicted)
-    return mae, rmse, r2_square
-```
-
-```{python}
 X_train, X_test, y_train, y_test = train_test_split(X,y,test_size=0.2,random_state=42)
 
-model = LinearRegression()
-model.fit(X_train, y_train)
-
-y_train_pred = model.predict(X_train)
+modelR = es.RandomForestClassifier()
+modelR.fit(X_train,y_train)
 y_test_pred = model.predict(X_test)
-y_test
+for a,b in zip(y_test,y_test_pred):
+    if(a==b):
+        countR += 1
+print("\nAccuracy Measures for Random Forest Classifier: \n")
 
+print("\n", classification_report(y_test,y_test_pred))
+accR = countR/len(y_test)
+print("\nAccuracy using Random Forest: ", str(round(accR, 3)))
+```
+
+## REGRESSION - LOOK IF AVERAGE IS GOOD OR USE G3
+
+```{r}
+datasetTarget <- dataset %>% mutate(AvgGrade = (G1 + G2 + G3)/ 3) %>% select(-G1, -G2, -G3)
+head(datasetTarget)
+datasetTarget <- 
+write.csv(datasetTarget, "dfAvgGrade.csv", row.names = FALSE)
 ```
 
 ```{python}
-pd.DataFrame({
-    'Actual_TotalGrade': y_test['TotalGrade'].values,
-    'Predicted_TotalGrade': y_test_pred[:, 1],
-    'Actual_AvgGrade': y_test['AvgGrade'].values,
-    'Predicted_AvgGrade': y_test_pred[:, 0]
-})
+from sklearn.model_selection import RandomizedSearchCV
+from sklearn.model_selection import GridSearchCV
+from sklearn.tree import DecisionTreeRegressor
+from sklearn.neighbors import KNeighborsRegressor
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.svm import SVR
+student_df = pd.read_csv('student_data.csv')
+
+# Categorical attributes
+cat_features = [feature for feature in student_df.columns if student_df[feature].dtype == 'O']
+
+# Numerical attributes
+num_features = [feature for feature in student_df.columns if student_df[feature].dtype != 'O']
+
+fig, axs = plt.subplots(1, 2, figsize=(15, 7))
+plt.subplot(121)
+sns.histplot(data=student_df, x='G3', bins=30, kde=True, color='g')
+plt.subplot(122)
+sns.histplot(data=student_df, x='G3', kde=True, hue='sex')
+plt.show()
+```
+
+```{python}
+
+le = LabelEncoder()
+for column in student_df.columns:
+    if student_df[column].dtype == 'object':
+        student_df[column] = le.fit_transform(student_df[column])
+        
+student_df.info()
+
+X = student_df.drop("G3", axis = 1).values
+y = student_df["G3"].values
+
+X_train, X_test, y_train, y_test = train_test_split(X,y,test_size=0.3,random_state=42)
+
+sc = StandardScaler()
+X = sc.fit_transform(X_train)
+y = sc.fit_transform(y_test.reshape(-1,1))
+print(f"X :\n{X}\n")
+print(f"y :\n{y}")
+
+print(X.shape)
+print(y.shape)
+```
+
+> Models & Hyperparameters
+
+```{python}
+
+models = [
+    {
+        'name': 'DecisionTreeRegressor',
+        'model': DecisionTreeRegressor(),
+        'params': {
+            'criterion': ['friedman_mse'],
+            "max_depth": range(1,20,2),
+        }
+    },
+    {
+        'name': 'SVR',
+        'model': SVR(),
+        'params': {
+            "gamma": [0.01],
+            'C': [50],
+            'kernel': ['rbf'],
+        }
+    },
+    {
+        'name': 'RandomForestRegressor',
+        'model': RandomForestRegressor(),
+        'params': {
+            'n_estimators': [300],
+            'criterion': ['friedman_mse'],
+        }
+    },
+    {
+        'name': 'KNeighborsRegressor',
+        'model': KNeighborsRegressor(),
+        'params': {
+            'n_neighbors': [9],
+            'weights': ['distance'],
+        }
+    },
+
+]
+
+
+best_models = []
+for model_info in models:
+    grid_search = GridSearchCV(model_info['model'], model_info['params'], cv=5, n_jobs=-1) 
+    grid_search.fit(X_train, y_train)  
+    best_models.append({
+        'name': model_info['name'],
+        'best_model': grid_search.best_estimator_,
+        'best_params': grid_search.best_params_,
+        'best_score': grid_search.best_score_
+    })
+
+for best_model in best_models:
+    print(f"Model: {best_model['name']} \nBest Parameters: {best_model['best_params']} \nBest Score: {round(best_model['best_score'], 2)}%")
+    print("-" * 30)
+
+model_names = []
+model_scores = []
+for best_model in best_models:
+    score = best_model['best_score']
+    if score >= 0:
+        model_names.append(best_model['name'])
+        model_scores.append(score)
+
+plt.figure(figsize=(12, 6))
+plt.bar(model_names, model_scores, color='skyblue')
+plt.xlabel('Model')
+plt.title('Model Score')
+plt.show()
 
 ```
+
 
 ------------------------------------------------------------------------
 
