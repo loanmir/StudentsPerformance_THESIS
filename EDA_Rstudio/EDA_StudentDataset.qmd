@@ -547,6 +547,7 @@ datasetCategory <- dataset %>% mutate(Category = case_when(
 ))
 
 datasetDiscretized <- datasetCategory %>% select(-G1, -G2, -G3)
+#datasetDiscretized <- datasetCategory %>% select(-G3)
 ```
 
 ```{r}
@@ -784,22 +785,20 @@ use_virtualenv("my-python2", required = TRUE)
 ## HeatMap of attributes (above made in R) - just encoding dataset
 
 ```{python}
-#| output: false
 import pandas as pd
 import numpy as np  
 import seaborn as sns
 import matplotlib.pyplot as plt
 from sklearn.linear_model import Ridge, Lasso
 import sklearn.ensemble as es
-
-from sklearn.metrics import  mean_squared_error,mean_absolute_error
+from sklearn.metrics import  mean_squared_error,mean_absolute_error, confusion_matrix, classification_report, accuracy_score
 
 from sklearn.model_selection import train_test_split
 
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Dropout
 
-
+from sklearn.model_selection import cross_val_score
 from sklearn.metrics import make_scorer
 from sklearn.preprocessing import LabelEncoder
 from tensorflow.keras.models import clone_model
@@ -811,7 +810,7 @@ from scipy import stats
 
 df = pd.read_csv('student_data.csv')
 
-df['AvgGrade'] = (df['G1'] + df['G2'] + df['G3'])/3
+#df['AvgGrade'] = (df['G1'] + df['G2'] + df['G3'])/3
 
 
 le = LabelEncoder()
@@ -827,12 +826,14 @@ df.to_csv("CorrelationStudent.csv", index=False)
 ## OUTLIERS
 
 
-## MULTICLASS CLASSIFICATIONS
+## CLASSIFICATION
 
 ### ZeroR
 
 ```{r}
+
 library(OneR)
+
 # begin functions
 ZeroR <- function(x, ...) {
   output <- OneR(cbind(dummy = TRUE, x[ncol(x)]), ...)
@@ -866,21 +867,21 @@ random <- sample(1:nrow(datasetDisc), 0.8 * nrow(datasetDisc))
 data_train <- optbin(datasetDisc[random, ], method = "infogain")
 data_test <- datasetDisc[-random, ]
 
-model <- ZeroR(data_train)
+model <- ZeroR(datasetDisc)
 summary(model)
 
-prediction <- predict(model, data_test)
+prediction <- predict(model, datasetDisc)
 
-results <- eval_model(prediction, data_test)
-print(results$confusion_matrix)
-print(paste("Accuracy:", results$accuracy))
+resultsZero <- eval_model(prediction, datasetDisc)
+print(resultsZero$confusion_matrix)
+print(paste("ZeroR accuracy is:", resultsZero$accuracy))
+zeroRfinal <- (resultsZero$accuracy )
 #modelOne <- OneR(categoryClass ~ ., data = data_train)
 ```
 
 ### OneR checkk!!
 
 ```{r}
-
 library(OneR)
 
 modelOne <- OneR(data_train, verbose = TRUE)
@@ -889,64 +890,159 @@ summary(modelOne)
 
 prediction <- predict(modelOne, data_test)
 
-results <- eval_model(prediction, data_test)
+resultsOne <- eval_model(prediction, data_test)
 
-print(results$confusion_matrix)
-print(paste("Accuracy:", results$accuracy))
+print(resultsOne$confusion_matrix)
+print(paste("OneR accuracy is: ", resultsOne$accuracy))
+oneRfinal <- (resultsOne$accuracy)
+
 ```
 
 ### Random Forests
 
-```{r}
-#set.seed(78)
-library(randomForest)
-
-forestModel <- randomForest(categoryClass ~ ., data = data_train, ntree = 2000)
-predictionForest <- predict(forestModel, data_test)
-resultForest <- eval_model(predictionForest, data_test)
-print(resultForest$confusion_matrix)
-print(paste("Accuracy:", resultForest$accuracy))
-```
-
-### RandForest in Python
-
 ```{python}
 data = pd.read_csv('discretizedDF.csv')
-
-
+countR = 0
+#Categorical features
 cat_features = [feature for feature in data.columns if data[feature].dtype == 'O']
 
 # Numerical attributes
 num_features = [feature for feature in data.columns if data[feature].dtype != 'O']
 
+
+
+le = LabelEncoder()
+for column in cat_features:
+    if data[column].dtype == 'object':
+        data[column] = le.fit_transform(data[column])
+
 X = data.drop("Category", axis=1)
 y = data["Category"]
 
-# Transforming the columns 
-preprocessor = ColumnTransformer(
-    transformers=[
-        ('cat', OneHotEncoder(), cat_features)],
-    remainder='passthrough'  # Leave the rest of the columns as they are
-)
-
-X = preprocessor.fit_transform(X)
-
-X_train, X_test, y_train, y_test = train_test_split(X,y,test_size=0.2,random_state=42)
+X_train, X_test, y_train, y_test = train_test_split(X,y,test_size=0.25,random_state=42)
 
 modelR = es.RandomForestClassifier()
-modelR.fit(X_train,y_train)
-y_test_pred = model.predict(X_test)
+kfR = KFold(shuffle=True, n_splits=5)
+RandForCvResults = cross_val_score(modelR, X, y, cv=kfR, scoring='accuracy')
+
+RandForCvResults
+print(RandForCvResults.mean())
+
+tmp = modelR.fit(X_train,y_train)
+tmp.score(X_test, y_test)
+y_test_pred = modelR.predict(X_test)
 for a,b in zip(y_test,y_test_pred):
     if(a==b):
         countR += 1
-print("\nAccuracy Measures for Random Forest Classifier: \n")
-
 print("\n", classification_report(y_test,y_test_pred))
-accR = countR/len(y_test)
-print("\nAccuracy using Random Forest: ", str(round(accR, 3)))
+accRandFor = (countR/len(y_test)) * 100
+print("\nAccuracy using Random Forest: ", str(round(accRandFor, 3)))
 ```
 
-## REGRESSION - LOOK IF AVERAGE IS GOOD OR USE G3
+### K_Neighbors
+
+```{python}
+
+from sklearn.neighbors import KNeighborsClassifier
+KNclassifier = KNeighborsClassifier(n_neighbors=20)
+
+dataN = pd.read_csv('discretizedDF.csv')
+
+#Categorical features
+cat_features = [feature for feature in dataN.columns if dataN[feature].dtype == 'O']
+
+# Numerical attributes
+num_features = [feature for feature in dataN.columns if dataN[feature].dtype != 'O']
+
+
+
+le = LabelEncoder()
+for column in cat_features:
+    if dataN[column].dtype == 'object':
+        dataN[column] = le.fit_transform(dataN[column])
+
+X = data.drop("Category", axis=1)
+y = data["Category"]
+
+X_train, X_test, y_train, y_test = train_test_split(X,y,test_size=0.25,random_state=42)
+
+kfK = KFold(shuffle=True, n_splits=5)
+KnnCvResults = cross_val_score(KNclassifier, X, y, cv=kfK, scoring='accuracy')
+
+KnnCvResults
+print(KnnCvResults.mean())
+
+tmp1 = KNclassifier.fit(X_train, y_train)
+tmp1.score(X_test,y_test)
+y_pred = KNclassifier.predict(X_test)
+
+print(classification_report(y_test, y_pred))
+print(confusion_matrix(y_test, y_pred))
+
+KNAcc = accuracy_score(y_pred,y_test)
+print('K Neighbours accuracy is: {:.2f}%'.format(KNAcc*100))
+```
+
+
+### SVM
+
+```{python}
+
+from sklearn.svm import SVC
+
+dataS = pd.read_csv('discretizedDF.csv')
+
+#Categorical features
+cat_features = [feature for feature in dataS.columns if dataS[feature].dtype == 'O']
+
+# Numerical attributes
+num_features = [feature for feature in dataS.columns if dataS[feature].dtype != 'O']
+
+
+
+le = LabelEncoder()
+for column in cat_features:
+    if dataS[column].dtype == 'object':
+        dataS[column] = le.fit_transform(dataS[column])
+
+X = data.drop("Category", axis=1)
+y = data["Category"]
+
+X_train, X_test, y_train, y_test = train_test_split(X,y,test_size=0.25,random_state=42)
+
+SVCclassifier = SVC(kernel='linear', max_iter=251)
+kfS = KFold(shuffle=True, n_splits=5)
+SVCcvResults = cross_val_score(SVCclassifier, X, y, cv=kfS, scoring='accuracy')
+
+SVCcvResults
+
+print(SVCcvResults.mean())
+
+tmp2 = SVCclassifier.fit(X_train, y_train)
+tmp2.score(X_test,y_test)
+
+y_pred = SVCclassifier.predict(X_test)
+
+print(classification_report(y_test, y_pred))
+print(confusion_matrix(y_test, y_pred))
+
+SVCAcc = accuracy_score(y_pred,y_test)
+print('SVC accuracy is: {:.2f}%'.format(SVCAcc*100))
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+## REGRESSION 
 
 ```{r}
 datasetTarget <- dataset %>% mutate(AvgGrade = (G1 + G2 + G3)/ 3) %>% select(-G1, -G2, -G3)
@@ -1005,6 +1101,7 @@ print(y.shape)
 > Models & Hyperparameters
 
 ```{python}
+#| eval: false
 
 models = [
     {
@@ -1044,15 +1141,16 @@ models = [
 ]
 
 
+
 best_models = []
 for model_info in models:
-    grid_search = GridSearchCV(model_info['model'], model_info['params'], cv=5, n_jobs=-1) 
+    grid_search = GridSearchCV(model_info['model'], model_info['params'], cv=10, n_jobs=-1, scoring = 'accuracy') 
     grid_search.fit(X_train, y_train)  
     best_models.append({
         'name': model_info['name'],
         'best_model': grid_search.best_estimator_,
         'best_params': grid_search.best_params_,
-        'best_score': grid_search.best_score_
+        'best_score': grid_search.best_score_,
     })
 
 for best_model in best_models:
@@ -1074,6 +1172,17 @@ plt.title('Model Score')
 plt.show()
 
 ```
+
+# Evaluation
+
+# Results
+
+```{python}
+compare = pd.DataFrame({'Model': ['ZeroR', 'OneR', 'Random Forests', 'K Neighbors', 'SVM', 'DecisionTreeRegressor', 'SVR', 'RandomForestRegressor', 'KNeighborsRegressor'], 
+                        'Accuracy': [8.86, 16.45, accRandFor, KNAcc*100, SVCAcc*100, 0.81, 0.87, 0.88, 0.84]})
+compare.sort_values(by='Accuracy', ascending=False)
+```
+
 
 
 ------------------------------------------------------------------------
