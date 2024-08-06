@@ -789,25 +789,26 @@ import pandas as pd
 import numpy as np  
 import seaborn as sns
 import matplotlib.pyplot as plt
-from sklearn.linear_model import Ridge, Lasso
 import sklearn.ensemble as es
-from sklearn.metrics import  mean_squared_error,mean_absolute_error, confusion_matrix, classification_report, accuracy_score
-
+from sklearn import metrics
+from sklearn.metrics import mean_absolute_error
+from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import train_test_split
-
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Dropout
-
 from sklearn.model_selection import cross_val_score
-from sklearn.metrics import make_scorer
 from sklearn.preprocessing import LabelEncoder
-from tensorflow.keras.models import clone_model
 from sklearn.model_selection import StratifiedKFold
 from sklearn.model_selection import KFold
-from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
-from scipy import stats
-
+#classifiers
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.svm import SVC
+# regressors
+from sklearn.tree import DecisionTreeRegressor 
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.neighbors import KNeighborsRegressor
+#from sklearn.ensemble import RandomForestRegressor
 df = pd.read_csv('student_data.csv')
 
 #df['AvgGrade'] = (df['G1'] + df['G2'] + df['G3'])/3
@@ -901,6 +902,7 @@ oneRfinal <- (resultsOne$accuracy)
 ### Random Forests
 
 ```{python}
+#| eval: false
 data = pd.read_csv('discretizedDF.csv')
 countR = 0
 #Categorical features
@@ -942,8 +944,8 @@ print("\nAccuracy using Random Forest: ", str(round(accRandFor, 3)))
 ### K_Neighbors
 
 ```{python}
+#| eval: false
 
-from sklearn.neighbors import KNeighborsClassifier
 KNclassifier = KNeighborsClassifier(n_neighbors=20)
 
 dataN = pd.read_csv('discretizedDF.csv')
@@ -987,8 +989,8 @@ print('K Neighbours accuracy is: {:.2f}%'.format(KNAcc*100))
 ### SVM
 
 ```{python}
+#| eval: false
 
-from sklearn.svm import SVC
 
 dataS = pd.read_csv('discretizedDF.csv')
 
@@ -1030,158 +1032,128 @@ SVCAcc = accuracy_score(y_pred,y_test)
 print('SVC accuracy is: {:.2f}%'.format(SVCAcc*100))
 ```
 
-
-
-
-
-
-
-
-
-
-
-
-
-## REGRESSION 
-
-```{r}
-datasetTarget <- dataset %>% mutate(AvgGrade = (G1 + G2 + G3)/ 3) %>% select(-G1, -G2, -G3)
-head(datasetTarget)
-datasetTarget <- 
-write.csv(datasetTarget, "dfAvgGrade.csv", row.names = FALSE)
-```
+## Regression
 
 ```{python}
-from sklearn.model_selection import RandomizedSearchCV
-from sklearn.model_selection import GridSearchCV
-from sklearn.tree import DecisionTreeRegressor
-from sklearn.neighbors import KNeighborsRegressor
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.svm import SVR
-student_df = pd.read_csv('student_data.csv')
+dataReg = pd.read_csv('student_data.csv')
 
 # Categorical attributes
-cat_features = [feature for feature in student_df.columns if student_df[feature].dtype == 'O']
+cat_features = [feature for feature in dataReg.columns if dataReg[feature].dtype == 'O']
 
 # Numerical attributes
-num_features = [feature for feature in student_df.columns if student_df[feature].dtype != 'O']
+num_features = [feature for feature in dataReg.columns if dataReg[feature].dtype != 'O']
 
-fig, axs = plt.subplots(1, 2, figsize=(15, 7))
-plt.subplot(121)
-sns.histplot(data=student_df, x='G3', bins=30, kde=True, color='g')
-plt.subplot(122)
-sns.histplot(data=student_df, x='G3', kde=True, hue='sex')
-plt.show()
-```
-
-```{python}
-
+# Encoding Categorical values
 le = LabelEncoder()
-for column in student_df.columns:
-    if student_df[column].dtype == 'object':
-        student_df[column] = le.fit_transform(student_df[column])
-        
-student_df.info()
+for column in dataReg.columns:
+    if dataReg[column].dtype == 'object':
+        dataReg[column] = le.fit_transform(dataReg[column])
 
-X = student_df.drop("G3", axis = 1).values
-y = student_df["G3"].values
+X = dataReg.drop("G3", axis = 1).values
+y = dataReg["G3"].values
 
-X_train, X_test, y_train, y_test = train_test_split(X,y,test_size=0.3,random_state=42)
+# Train Test Splitting
+X_train, X_test, y_train, y_test = train_test_split(X,y,test_size=0.2,random_state=42)
 
-sc = StandardScaler()
-X = sc.fit_transform(X_train)
-y = sc.fit_transform(y_test.reshape(-1,1))
-print(f"X :\n{X}\n")
-print(f"y :\n{y}")
 
-print(X.shape)
-print(y.shape)
 ```
 
-> Models & Hyperparameters
+### Function for regression metrics
 
 ```{python}
-#| eval: false
-
-models = [
-    {
-        'name': 'DecisionTreeRegressor',
-        'model': DecisionTreeRegressor(),
-        'params': {
-            'criterion': ['friedman_mse'],
-            "max_depth": range(1,20,2),
-        }
-    },
-    {
-        'name': 'SVR',
-        'model': SVR(),
-        'params': {
-            "gamma": [0.01],
-            'C': [50],
-            'kernel': ['rbf'],
-        }
-    },
-    {
-        'name': 'RandomForestRegressor',
-        'model': RandomForestRegressor(),
-        'params': {
-            'n_estimators': [300],
-            'criterion': ['friedman_mse'],
-        }
-    },
-    {
-        'name': 'KNeighborsRegressor',
-        'model': KNeighborsRegressor(),
-        'params': {
-            'n_neighbors': [9],
-            'weights': ['distance'],
-        }
-    },
-
-]
-
-
-
-best_models = []
-for model_info in models:
-    grid_search = GridSearchCV(model_info['model'], model_info['params'], cv=10, n_jobs=-1, scoring = 'accuracy') 
-    grid_search.fit(X_train, y_train)  
-    best_models.append({
-        'name': model_info['name'],
-        'best_model': grid_search.best_estimator_,
-        'best_params': grid_search.best_params_,
-        'best_score': grid_search.best_score_,
-    })
-
-for best_model in best_models:
-    print(f"Model: {best_model['name']} \nBest Parameters: {best_model['best_params']} \nBest Score: {round(best_model['best_score'], 2)}%")
-    print("-" * 30)
-
-model_names = []
-model_scores = []
-for best_model in best_models:
-    score = best_model['best_score']
-    if score >= 0:
-        model_names.append(best_model['name'])
-        model_scores.append(score)
-
-plt.figure(figsize=(12, 6))
-plt.bar(model_names, model_scores, color='skyblue')
-plt.xlabel('Model')
-plt.title('Model Score')
-plt.show()
-
+def Regression_metrics (model,X_train,y_train,X_test,y_test,y_pred):
+    kf = KFold(shuffle=True, n_splits=5)
+    cv_score = cross_val_score(estimator = model, X = X_train, y = y_train, cv = kf)
+    
+    # Calculating Adjusted R-squared
+    r2 = model.score(X_test, y_test)
+    # Number of observations is the shape along axis 0
+    n = X_test.shape[0]
+    # Number of features (predictors, p) is the shape along axis 1
+    p = X_test.shape[1]
+    # Adjusted R-squared formula
+    adjusted_r2 = 1-(1-r2)*(n-1)/(n-p-1)
+    RMSE = np.sqrt(metrics.mean_squared_error(y_test, y_pred))
+    R2 = model.score(X_test, y_test)
+    CV_R2 = cv_score.mean()
+    mae = mean_absolute_error(y_test, y_pred)
+    mse = mean_squared_error(y_test, y_pred)
+    return R2, adjusted_r2, CV_R2, RMSE, mae, mse
+    
+    print('MAE:',round(mae,4))
+    print('MSE:',round(mse,4))
+    print('RMSE:', round(RMSE,4))
+    print('R2:', round(R2,4))
+    print('Adjusted R2:', round(adjusted_r2, 4) )
+    print("Cross Validated R2: ", round(cv_score.mean(),4) )
 ```
+
+
+### Decision Tree Regressor
+
+```{python}
+DecisionTree_reg = DecisionTreeRegressor(random_state = 42)
+DecisionTree_reg.fit(X_train, y_train)
+# Making prediction on data
+y_pred = DecisionTree_reg.predict(X_test)
+  
+ndf = [Regression_metrics(DecisionTree_reg, X_train, y_train, X_test, y_test, y_pred)]
+  
+dtScore = pd.DataFrame(data = ndf, columns=['R2 Score','Adjusted R2 Score','Cross Validated R2 Score','RMSE', 'MAE', 'MSE'])
+dtScore.insert(0, 'Model', 'Decision Tree')
+table = dtScore.to_string(index=False)
+print(table)
+```
+
+
+### Random Forest Regressor
+
+```{python}
+RandomForest_reg = RandomForestRegressor(n_estimators = 10, random_state = 0)
+RandomForest_reg.fit(X_train, y_train)
+# Making prediction on data
+y_pred = RandomForest_reg.predict(X_test)
+
+ndf = [Regression_metrics(RandomForest_reg, X_train, y_train, X_test, y_test, y_pred)]
+
+rfScore = pd.DataFrame(data = ndf, columns=['R2 Score','Adjusted R2 Score','Cross Validated R2 Score','RMSE', 'MAE', 'MSE'])
+rfScore.insert(0, 'Model', 'Random Forest')
+table = rfScore.to_string(index=False)
+print(table)
+```
+
+
+### KNN Regressor (Nearest Neighbors)
+
+```{python}
+KNeighbors_reg = KNeighborsRegressor(n_neighbors=10)
+KNeighbors_reg.fit(X_train,y_train)
+# Making prediction on data
+y_pred = KNeighbors_reg.predict(X_test)
+
+ndf = [Regression_metrics(KNeighbors_reg, X_train, y_train, X_test, y_test, y_pred)]
+
+knnScore = pd.DataFrame(data = ndf, columns=['R2 Score','Adjusted R2 Score','Cross Validated R2 Score','RMSE', 'MAE', 'MSE'])
+knnScore.insert(0, 'Model', 'KNN Regressor')
+table = knnScore.to_string(index=False)
+print(table)
+```
+
+### All togheter
+
+```{python}
+predictions = pd.concat([dtScore, rfScore, knnScore], ignore_index=True, sort=False)
+table = predictions.to_string(index=False)
+print(table)
+```
+
+
+
+
+
 
 # Evaluation
 
-# Results
-
-```{python}
-compare = pd.DataFrame({'Model': ['ZeroR', 'OneR', 'Random Forests', 'K Neighbors', 'SVM', 'DecisionTreeRegressor', 'SVR', 'RandomForestRegressor', 'KNeighborsRegressor'], 
-                        'Accuracy': [8.86, 16.45, accRandFor, KNAcc*100, SVCAcc*100, 0.81, 0.87, 0.88, 0.84]})
-compare.sort_values(by='Accuracy', ascending=False)
-```
 
 
 
